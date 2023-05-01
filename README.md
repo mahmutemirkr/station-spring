@@ -11,13 +11,13 @@ Station - Spring Boot
 
 ``` POST station/add ```
 
-``` POST station ```
+``` GET station ```
 
 ``` DELETE bus/{id} ```
 
-``` PUT station/add ```
+``` PUT station/{id} ```
 
-``` DELETE station/add ```
+``` DELETE station/{id} ```
 
 ``` Register & Login```
 
