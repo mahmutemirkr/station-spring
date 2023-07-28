@@ -5,15 +5,17 @@ Station - Spring Boot
 
 ``` DELETE bus/{id} ```
 
-``` GET bus```
+``` GET bus/{id}```
 
-``` UPDATE bus/{id} ```
+``` GET bus/all```
 
-``` POST station/add ```
+``` GET bus/page { page & size & sort & direction } ```
 
-``` GET station ```
+``` PUT bus/{id} ```
 
-``` DELETE bus/{id} ```
+``` POST station ```
+
+``` GET station/{id} ```
 
 ``` PUT station/{id} ```
 
