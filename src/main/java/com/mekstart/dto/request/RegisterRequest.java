@@ -1,4 +1,4 @@
-package com.mekstart.dto;
+package com.mekstart.dto.request;
 
 import lombok.Data;
 

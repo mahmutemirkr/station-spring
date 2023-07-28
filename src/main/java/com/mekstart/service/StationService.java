@@ -2,46 +2,113 @@ package com.mekstart.service;
 
 import com.mekstart.domain.Bus;
 import com.mekstart.domain.Station;
+import com.mekstart.dto.StationDTO;
+import com.mekstart.dto.request.StationRequest;
 import com.mekstart.exception.ResourceNotFoundException;
+import com.mekstart.exception.message.ErrorMessage;
+import com.mekstart.mapper.StationMapper;
 import com.mekstart.repository.BusRepository;
 import com.mekstart.repository.StationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+
 public class StationService {
 
     @Autowired
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     @Autowired
-    private BusRepository busRepository;
+    private final StationMapper stationMapper;
 
-    public Station createStation(Long busId, Station station) {
-        Bus bus = busRepository.findById(busId).orElseThrow(() -> new ResourceNotFoundException("Bus not found"));
+    @Autowired
+    private final BusRepository busRepository;
+
+    @Autowired
+    private final BusService busService;
+    public StationService(StationRepository stationRepository, StationMapper stationMapper, BusRepository busRepository, BusService busService) {
+        this.stationRepository = stationRepository;
+        this.stationMapper = stationMapper;
+        this.busRepository = busRepository;
+        this.busService = busService;
+    }
+
+    private Station getStation(Long id) {
+
+        Station station = stationRepository.findById(id).orElseThrow(()->
+                new ResourceNotFoundException(String.format(ErrorMessage.RESOURCE_NOT_FOUND_EXCEPTION,id)));
+
+        return station;
+
+    }
+
+
+    public void saveStation(StationRequest stationRequest) {
+
+        Bus bus = busService.getBus(stationRequest.getBusId());
+
+        Station station = new Station();
+
+        station.setStationName(stationRequest.getStationName());
+        station.setRota(stationRequest.getRota());
         station.setBus(bus);
-        return stationRepository.save(station);
+
+        stationRepository.save(station);
+
+        //Station station = stationMapper.stationRequestToStation(stationRequest); // mapper kütüphasi
+        //System.out.println(station.getId());
+
     }
 
-    public Station updateStation(Long id, Station station) {
-        Station existingStation = stationRepository.
-                findById(id).orElseThrow(() -> new ResourceNotFoundException("Station not found"));
-        existingStation.setStationName(station.getStationName());
-        existingStation.setBus(station.getBus());
-        return stationRepository.save(existingStation);
+
+    public Station getStationById(Long id) {
+
+        Station station = getStation(id);
+
+        return station;
     }
 
-    public void deleteStation(Long id) {
-        Station station = stationRepository.
-                findById(id).orElseThrow(() -> new ResourceNotFoundException("Station not found"));
+
+    public List<Station> getAllStation() {
+
+        List<Station> stationList = stationRepository.findAll();
+
+        return stationList;
+
+    }
+
+
+    public Page<Station> getAllWithPage(Pageable pageable) {
+
+        Page<Station> stationPage = stationRepository.findAll(pageable);
+
+        return stationPage;
+    }
+
+    public void updateStation(Long id, StationRequest stationRequest) {
+
+        Bus bus = busService.getBus(stationRequest.getBusId());
+
+        Station station = getStation(id);
+
+        station.setBus(bus);
+        station.setStationName(stationRequest.getStationName());
+        station.setRota(stationRequest.getRota());
+
+        stationRepository.save(station);
+
+    }
+
+    public void removeStation(Long id) {
+
+        Station station = getStation(id);
+
         stationRepository.delete(station);
-    }
-
-    public List<Station> getAll() {
-
-        return stationRepository.findAll();
 
     }
 }

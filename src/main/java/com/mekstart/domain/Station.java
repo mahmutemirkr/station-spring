@@ -21,11 +21,12 @@ public class Station {
 
     private String stationName;
 
+    private String rota;
+
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "bus_id")
     private Bus bus;
 
-    private String rota;
 
 }

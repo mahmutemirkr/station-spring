@@ -20,11 +20,13 @@ import java.io.IOException;
 
 public class AuthTokenFilter extends OncePerRequestFilter {
 
+
     @Autowired
     private JwtUtils jwtUtils;
 
     @Autowired
     private UserDetailsService userDetailsService;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -32,18 +34,22 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain)
             throws ServletException, IOException {
 
+
         String jwtToken = parseJwt(request);
 
 
         try {
             if(jwtToken!=null && jwtUtils.validateToken(jwtToken)){
 
-                String userName = jwtUtils.getUserNameFromJwtToken(jwtToken);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
 
-                UsernamePasswordAuthenticationToken authenticationToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                String userName = jwtUtils.getUserNameFromJwtToken(jwtToken);
+                UserDetails userDetails =  userDetailsService.loadUserByUsername(userName);
+
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+
 
             }
         } catch (UsernameNotFoundException e) {
@@ -57,17 +63,14 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 
     private String parseJwt(HttpServletRequest request){
-
-        String header = request.getHeader("Authorization");
-        if(StringUtils.hasText(header) && header.startsWith("Bearer ")){
-
+        String header =  request.getHeader("Authorization");
+        if(StringUtils.hasText(header) && header.startsWith("Bearer ")) {
             return header.substring(7);
-
         }
-
         return null;
 
     }
+
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
@@ -75,6 +78,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         return antPathMatcher.match("/register", request.getServletPath()) ||
                 antPathMatcher.match("/login" , request.getServletPath());
     }
+
 
 
 }

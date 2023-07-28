@@ -19,14 +19,10 @@ public class Bus {
 
     private String busName;
 
-    @OneToMany(mappedBy = "bus", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Station> station = new ArrayList<>();
-
     private String rota;
 
-    @JoinColumn(name="user_id")
-    @OneToOne
-    private User user;
+    @OneToMany(mappedBy = "bus", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Station> station = new ArrayList<>();
 
 
 }

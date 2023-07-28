@@ -1,8 +1,7 @@
 package com.mekstart.controller;
 
-import com.mekstart.dto.LoginRequest;
-import com.mekstart.dto.RegisterRequest;
-import com.mekstart.exception.ResourceNotFoundException;
+import com.mekstart.dto.request.LoginRequest;
+import com.mekstart.dto.request.RegisterRequest;
 import com.mekstart.security.JwtUtils;
 import com.mekstart.service.UserService;
 import lombok.AllArgsConstructor;
@@ -34,11 +33,12 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(
-            @Valid @RequestBody RegisterRequest registerRequest) throws ResourceNotFoundException {
+            @Valid @RequestBody RegisterRequest registerRequest) {
         userService.registerUser(registerRequest);
-        String message = "Success";
+        String message = "Kullanıcı kaydınız başarıyla gerçekleşmiştir";
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
+
 
 
     @PostMapping("/login")
@@ -48,6 +48,7 @@ public class UserController {
                 loginRequest.getPassword()));
         String token = jwtUtils.generateToken(authentication);
         return new ResponseEntity<>(token, HttpStatus.CREATED);
+
 
     }
 
